@@ -16,6 +16,9 @@ import com.couchbase.lite.replicator.Replication;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.aerogear.mobile.core.MobileCore;
+import org.aerogear.mobile.core.configuration.ServiceConfiguration;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -37,9 +40,9 @@ import okhttp3.Response;
 public class Application extends android.app.Application implements Replication.ChangeListener {
     public static final String TAG = "GrocerySync";
 
-    private static final String DATABASE_NAME = "grocery-sync";
     private static final String USER_LOCAL_DOC_ID = "user";
-    private static final String SERVER_DB_URL = "http://us-west.testfest.couchbasemobile.com:4984/grocery-sync/";
+    private String databaseName;
+    private String serverDBUrl;
 
     interface ReplicationSetupCallback {
         void setup(Replication repl);
@@ -66,6 +69,11 @@ public class Application extends android.app.Application implements Replication.
     @Override
     public void onCreate() {
         super.onCreate();
+
+        MobileCore core = MobileCore.init(this);
+        ServiceConfiguration config = core.getServiceConfiguration("couchbase");
+        databaseName = config.getProperty("database-name");
+        serverDBUrl = String.format("%s/%s", config.getUrl(), databaseName);
         initializeDatabase();
     }
 
@@ -106,7 +114,7 @@ public class Application extends android.app.Application implements Replication.
             options.setStorageType(Manager.SQLITE_STORAGE);
             options.setCreate(true);
             try {
-                database = manager.openDatabase(DATABASE_NAME, options);
+                database = manager.openDatabase(databaseName, options);
             } catch (CouchbaseLiteException e) {
                 Log.e(TAG, "Couldn't open database", e);
                 return false;
@@ -117,14 +125,14 @@ public class Application extends android.app.Application implements Replication.
 
     public URL getServerDbUrl() {
         try {
-            return new URL(SERVER_DB_URL);
+            return new URL(serverDBUrl);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
     private URL getServerDbSessionUrl() {
-        String serverUrl = SERVER_DB_URL;
+        String serverUrl = serverDBUrl;
         if (!serverUrl.endsWith("/"))
             serverUrl = serverUrl + "/";
         try {

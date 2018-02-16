@@ -1,2 +1,2 @@
-include ':GrocerySync-Android'
+include ':GrocerySync-Android', ':core'
 

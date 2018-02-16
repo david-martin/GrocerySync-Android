@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "clusterName": "https://192.168.37.1:8443",
+  "namespace": "myproject",
+  "clientId": "app-cordova",
+  "services": [
+    {
+      "id": "couchbase",
+      "name": "couchbase",
+      "type": "couchbase",
+      "url": "https://sync-gateway-dm-test-keycloak-03.b5e6.rhm-eng-a.openshiftapps.com",
+      "config": {
+        "database-name": "db"
+      }
+    }
+  ]
+}
+
