@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.aerogear.mobile.core.MobileCore;
-import org.aerogear.mobile.core.configuration.ServiceConfiguration;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.dmkube.couchbase.CouchbaseLiteConfig;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
@@ -71,9 +71,10 @@ public class Application extends android.app.Application implements Replication.
         super.onCreate();
 
         MobileCore core = MobileCore.init(this);
-        ServiceConfiguration config = core.getServiceConfiguration("couchbase");
-        databaseName = config.getProperty("database-name");
-        serverDBUrl = String.format("%s/%s", config.getUrl(), databaseName);
+        CouchbaseLiteConfig config = core.getInstance(CouchbaseLiteConfig.class);
+        databaseName = config.getDatabaseName();
+        serverDBUrl = config.getServerDBUrl();
+
         initializeDatabase();
     }
 

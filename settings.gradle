@@ -1,2 +1,2 @@
-include ':GrocerySync-Android', ':core'
+include ':GrocerySync-Android', ':core', ':couchbase'
 
